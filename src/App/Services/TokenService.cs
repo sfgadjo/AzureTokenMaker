@@ -23,7 +23,7 @@ namespace AzureTokenMaker.App.Services {
         }
 
         public string GetUserToken ( TokenParameters parameters ) {
-            var context = getContext(parameters.Tenant);
+            var context = getContext("common");
 
             var result = context.AcquireToken(parameters.ResourceId,
                                   parameters.ClientId, new UserCredential( parameters.Username, parameters.Password ) );
