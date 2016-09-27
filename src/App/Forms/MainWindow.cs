@@ -203,6 +203,10 @@
         private void lnkNew_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
 
+            bool handledDirty = handleContextChange();
+            if (!handledDirty)
+                return;
+
             var name = Prompt.ShowDialog("What would you like to call this profile?", "New Profile");
 
             if (String.IsNullOrWhiteSpace(name))
