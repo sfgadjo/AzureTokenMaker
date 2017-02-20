@@ -283,6 +283,8 @@
             // txtTenant
             // 
             this.txtTenant.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtTenant.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.txtTenant.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.txtTenant.Location = new System.Drawing.Point(203, 48);
             this.txtTenant.Margin = new System.Windows.Forms.Padding(5);
             this.txtTenant.Name = "txtTenant";
@@ -352,6 +354,8 @@
             // txtAppId
             // 
             this.txtAppId.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtAppId.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.txtAppId.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.txtAppId.Location = new System.Drawing.Point(163, 138);
             this.txtAppId.Margin = new System.Windows.Forms.Padding(5);
             this.txtAppId.Name = "txtAppId";
@@ -518,7 +522,7 @@
             this.lnkSave.TabIndex = 1;
             this.lnkSave.TabStop = true;
             this.lnkSave.Text = "Save";
-            this.toolTip.SetToolTip(this.lnkSave, "Saves the currently loaded profile.");
+            this.toolTip.SetToolTip(this.lnkSave, "Saves the currently loaded profile. (Ctl + S)");
             this.lnkSave.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkSave_LinkClicked);
             // 
             // lnkDelete
@@ -733,6 +737,7 @@
             this.Controls.Add(this.tabMain);
             this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(5);
             this.MinimumSize = new System.Drawing.Size(700, 500);
             this.Name = "MainWindow";
@@ -740,6 +745,7 @@
             this.Text = "Azure Token Maker";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainWindow_FormClosing);
             this.Load += new System.EventHandler(this.Main_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainWindow_KeyDown);
             this.tabMain.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.grpOutput.ResumeLayout(false);
