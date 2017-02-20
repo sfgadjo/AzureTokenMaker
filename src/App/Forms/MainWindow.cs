@@ -1,4 +1,5 @@
-﻿namespace AzureTokenMaker.App.Forms {
+﻿namespace AzureTokenMaker.App.Forms
+{
 
     using System;
     using System.Globalization;
@@ -8,7 +9,8 @@
     using Services;
     using Model;
     using Properties;
-
+    using System.Linq;
+    using System.Collections.Generic;
     public partial class MainWindow : Form
     {
 
@@ -76,7 +78,8 @@
             {
                 toggleProfileButtons(false);
             }
-            tstat.Text = String.Format("Deleted profile '{0}'", profileName);
+
+            updateStatusMessage($"Deleted profile '{profileName}'");
             _currentProfile = null;
             reset();
             toggleProfileButtons(false);
@@ -128,6 +131,35 @@
             toggleConfigurationGroup(false);
             toggleProfileButtons(false);
             loadProfiles();
+            loadAutoCompleteList();
+        }
+
+
+        private void loadAutoCompleteList()
+        {
+            var profiles = _profileService.GetProfiles().ToList();
+
+            List<string> resourceIds = new List<string>();
+            List<string> tenantIds = new List<string>();
+            profiles.ForEach(profile =>
+            {
+                var resourceId = profile?.Data?.ResourceId;
+                var tenantId = profile?.Data?.Tenant;
+
+                if (!String.IsNullOrWhiteSpace(resourceId) && !resourceIds.Contains(resourceId))
+                    resourceIds.Add(resourceId);
+
+                if (!String.IsNullOrWhiteSpace(tenantId) && !tenantIds.Contains(tenantId))
+                    tenantIds.Add(tenantId);
+            });
+
+            var resourceIdAutoCompleteList = new AutoCompleteStringCollection();
+            resourceIdAutoCompleteList.AddRange(resourceIds.OrderBy(s => s).ToArray());
+            txtAppId.AutoCompleteCustomSource = resourceIdAutoCompleteList;
+
+            var tenantIdAutoCompleteList = new AutoCompleteStringCollection();
+            tenantIdAutoCompleteList.AddRange(tenantIds.OrderBy(s => s).ToArray());
+            txtTenant.AutoCompleteCustomSource = tenantIdAutoCompleteList;
         }
 
         private void cboProfile_SelectedIndexChanged(object sender, EventArgs e)
@@ -138,8 +170,9 @@
             {
                 populateControls(selectedProfile);
                 toggleProfileButtons(true);
-                tstat.Text = String.Concat("Loaded profile '", selectedProfile.Name, "'");
+                updateStatusMessage($"Loaded profile '{selectedProfile.Name}'");
                 _currentProfile = selectedProfile;
+                loadAutoCompleteList();
             }
         }
 
@@ -177,8 +210,7 @@
 
         private void lnkSave_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            var savedProfile = save();
-            tstat.Text = String.Concat("Saved profile '", savedProfile.Name, "'");
+            save();
         }
 
         private Profile save()
@@ -197,7 +229,15 @@
                 }
             }
             _currentProfile = targetProfile;
+            updateStatusMessage($"Saved profile '{targetProfile.Name}'");
+
             return _currentProfile;
+        }
+
+        private void updateStatusMessage(string message, bool includeTimestamp = true)
+        {
+            var timestamp = includeTimestamp ? $" at {DateTime.Now:h:m:ss tt}" : String.Empty;
+            tstat.Text = $"{message}{timestamp}";
         }
 
         private void lnkNew_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -225,7 +265,7 @@
 
             cboProfile.SelectedIndex = index;
             toggleProfileButtons(true);
-            tstat.Text = String.Concat("Created profile '", profile.Name, "'");
+            updateStatusMessage($"Created profile '{profile.Name}'");
         }
 
         private void reset(bool keepSelectedItem = false)
@@ -281,7 +321,8 @@
                 }
                 tokenParameters = populateTokenForUser(populateTokenForClient(new TokenParameters()));
             }
-            tstat.Text = "Generating token...";
+
+            updateStatusMessage("Generating token...", false);
             toggleGenerate(false);
             UseWaitCursor = true;
             bgwMain.RunWorkerAsync(tokenParameters);
@@ -413,7 +454,7 @@
                     }
                 }
                 txtOutput.Text = text;
-                tstat.Text = "ATTENTION: There was an error. See Output box for details";
+                updateStatusMessage("ATTENTION: There was an error. See Output box for details");
                 lnkCopy.Enabled = true;
                 lnkCopyToClip.Enabled = false;
                 lnkCopyAsParameter.Enabled = false;
@@ -421,7 +462,7 @@
             }
             else {
                 txtOutput.Text = (string)e.Result;
-                tstat.Text = String.Format("Generated token for '{0}'", txtAppId.Text);
+                updateStatusMessage($"Generated token for '{txtAppId.Text}'");
                 lnkCopy.Enabled = true;
                 lnkCopyToClip.Enabled = true;
                 lnkCopyAsParameter.Enabled = true;
@@ -438,7 +479,7 @@
                 return;
             }
             Clipboard.SetText("Authorization: Bearer " + txtOutput.Text.Trim());
-            tstat.Text = "The output was copied to the clipboard as an HTTP Authorization header";
+            updateStatusMessage("The output was copied to the clipboard as an HTTP Authorization header");
         }
 
         private void handleTypeSelection(object sender, EventArgs e)
@@ -482,7 +523,7 @@
                 txtClaims.Text = decodedToken.Claims;
                 txtSignature.Text = decodedToken.Signature;
                 txtHeader.Text = decodedToken.Header;
-                tstat.Text = "Json Web Token was decoded";
+                updateStatusMessage("Json Web Token was decoded");
             }
             catch (Exception ex)
             {
@@ -490,7 +531,7 @@
                 txtSignature.Text = String.Empty;
                 txtHeader.Text = String.Empty;
                 txtClaims.Text = exceptionJson;
-                tstat.Text = "ATTENTION: There was an error decoding. See claims box for details";
+                updateStatusMessage("ATTENTION: There was an error decoding. See claims box for details");
             }
         }
 
@@ -587,7 +628,7 @@
                 return;
             }
             Clipboard.SetText(txtOutput.Text.Trim());
-            tstat.Text = "The output was copied to the clipboard";
+            updateStatusMessage("The output was copied to the clipboard");
         }
 
         private void handleTenantSelection(object sender, EventArgs e)
@@ -602,12 +643,23 @@
                 return;
             }
             Clipboard.SetText("Bearer " + txtOutput.Text.Trim());
-            tstat.Text = "The output was copied to the clipboard as a Bearer parameter";
+            updateStatusMessage("The output was copied to the clipboard as a Bearer parameter");
         }
 
         private void cboProfile_Enter(object sender, EventArgs e)
         {
             handleContextChange();
+        }
+
+        private void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+
+            if (e.Control && e.KeyCode == Keys.S)       // Ctrl-S Save
+            {
+                save();
+                e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
+            }
+
         }
     }
 }
