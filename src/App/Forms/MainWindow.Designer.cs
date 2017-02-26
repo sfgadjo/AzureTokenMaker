@@ -76,6 +76,8 @@
             this.erpConfiguration = new System.Windows.Forms.ErrorProvider(this.components);
             this.erpDecode = new System.Windows.Forms.ErrorProvider(this.components);
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.lnkRename = new System.Windows.Forms.LinkLabel();
+            this.lnkClone = new System.Windows.Forms.LinkLabel();
             this.tabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.grpOutput.SuspendLayout();
@@ -324,7 +326,7 @@
             this.lblPassword.Location = new System.Drawing.Point(25, 344);
             this.lblPassword.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lblPassword.Name = "lblPassword";
-            this.lblPassword.Size = new System.Drawing.Size(79, 21);
+            this.lblPassword.Size = new System.Drawing.Size(80, 21);
             this.lblPassword.TabIndex = 10;
             this.lblPassword.Text = "Password:";
             this.lblPassword.Visible = false;
@@ -473,6 +475,8 @@
             // 
             this.grpProfiles.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.grpProfiles.Controls.Add(this.lnkClone);
+            this.grpProfiles.Controls.Add(this.lnkRename);
             this.grpProfiles.Controls.Add(this.label4);
             this.grpProfiles.Controls.Add(this.lnkNew);
             this.grpProfiles.Controls.Add(this.lnkSave);
@@ -501,7 +505,7 @@
             // 
             this.lnkNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lnkNew.AutoSize = true;
-            this.lnkNew.Location = new System.Drawing.Point(632, 31);
+            this.lnkNew.Location = new System.Drawing.Point(540, 31);
             this.lnkNew.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lnkNew.Name = "lnkNew";
             this.lnkNew.Size = new System.Drawing.Size(42, 21);
@@ -515,7 +519,7 @@
             // 
             this.lnkSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lnkSave.AutoSize = true;
-            this.lnkSave.Location = new System.Drawing.Point(715, 31);
+            this.lnkSave.Location = new System.Drawing.Point(600, 31);
             this.lnkSave.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lnkSave.Name = "lnkSave";
             this.lnkSave.Size = new System.Drawing.Size(43, 21);
@@ -533,7 +537,7 @@
             this.lnkDelete.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lnkDelete.Name = "lnkDelete";
             this.lnkDelete.Size = new System.Drawing.Size(54, 21);
-            this.lnkDelete.TabIndex = 2;
+            this.lnkDelete.TabIndex = 4;
             this.lnkDelete.TabStop = true;
             this.lnkDelete.Text = "Delete";
             this.toolTip.SetToolTip(this.lnkDelete, "Deletes the selected profile.");
@@ -549,7 +553,7 @@
             this.cboProfile.Margin = new System.Windows.Forms.Padding(5);
             this.cboProfile.Name = "cboProfile";
             this.cboProfile.Size = new System.Drawing.Size(862, 29);
-            this.cboProfile.TabIndex = 0;
+            this.cboProfile.TabIndex = 5;
             this.toolTip.SetToolTip(this.cboProfile, "Select a profile or click New to add.");
             this.cboProfile.SelectedIndexChanged += new System.EventHandler(this.cboProfile_SelectedIndexChanged);
             this.cboProfile.Enter += new System.EventHandler(this.cboProfile_Enter);
@@ -674,7 +678,7 @@
             this.lblToken.Location = new System.Drawing.Point(19, 35);
             this.lblToken.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.lblToken.Name = "lblToken";
-            this.lblToken.Size = new System.Drawing.Size(154, 21);
+            this.lblToken.Size = new System.Drawing.Size(157, 21);
             this.lblToken.TabIndex = 0;
             this.lblToken.Text = "Raw Json Web Token";
             // 
@@ -690,7 +694,7 @@
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.lblStatus,
             this.tstat});
-            this.statusStrip.Location = new System.Drawing.Point(0, 851);
+            this.statusStrip.Location = new System.Drawing.Point(0, 724);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Padding = new System.Windows.Forms.Padding(2, 0, 19, 0);
             this.statusStrip.Size = new System.Drawing.Size(959, 22);
@@ -728,11 +732,39 @@
             this.toolTip.IsBalloon = true;
             this.toolTip.ReshowDelay = 100;
             // 
+            // lnkRename
+            // 
+            this.lnkRename.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lnkRename.AutoSize = true;
+            this.lnkRename.Location = new System.Drawing.Point(660, 31);
+            this.lnkRename.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.lnkRename.Name = "lnkRename";
+            this.lnkRename.Size = new System.Drawing.Size(67, 21);
+            this.lnkRename.TabIndex = 2;
+            this.lnkRename.TabStop = true;
+            this.lnkRename.Text = "Rename";
+            this.toolTip.SetToolTip(this.lnkRename, "Renames the currently loaded profile.");
+            this.lnkRename.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkRename_LinkClicked);
+            // 
+            // lnkClone
+            // 
+            this.lnkClone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lnkClone.AutoSize = true;
+            this.lnkClone.Location = new System.Drawing.Point(737, 31);
+            this.lnkClone.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
+            this.lnkClone.Name = "lnkClone";
+            this.lnkClone.Size = new System.Drawing.Size(50, 21);
+            this.lnkClone.TabIndex = 3;
+            this.lnkClone.TabStop = true;
+            this.lnkClone.Text = "Clone";
+            this.toolTip.SetToolTip(this.lnkClone, "Clones the currently loaded profile.");
+            this.lnkClone.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkClone_LinkClicked);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(959, 873);
+            this.ClientSize = new System.Drawing.Size(959, 746);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.tabMain);
             this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -822,6 +854,8 @@
         private System.Windows.Forms.LinkLabel lnkSave;
         private System.Windows.Forms.LinkLabel lnkDelete;
         private System.Windows.Forms.ComboBox cboProfile;
+        private System.Windows.Forms.LinkLabel lnkRename;
+        private System.Windows.Forms.LinkLabel lnkClone;
     }
 }
 

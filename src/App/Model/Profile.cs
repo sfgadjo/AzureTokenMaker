@@ -27,6 +27,11 @@ namespace AzureTokenMaker.App.Model {
         public ProfileType Type {
             get; set; }
 
+        public Profile Clone()
+        {
+            return new Profile {Data = Data?.Clone(), Name = Name, TenantType = TenantType, Type = Type};
+        }
+
         public bool Equals(Profile other) {
             if (other == null) {
                 return false;
