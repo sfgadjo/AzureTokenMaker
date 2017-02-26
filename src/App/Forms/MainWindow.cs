@@ -58,6 +58,8 @@
         {
             lnkSave.Enabled = isEnabled;
             lnkDelete.Enabled = isEnabled;
+            lnkRename.Enabled = isEnabled;
+            lnkClone.Enabled = isEnabled;
         }
 
         private void lnkDelete_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -253,6 +255,16 @@
             {
                 return;
             }
+
+            var allProfiles = _profileService.GetProfiles();
+            var existingProfile = allProfiles.FirstOrDefault(x => x.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
+
+            if (existingProfile != null)
+            {
+                cboProfile.SelectedIndex = cboProfile.Items.IndexOf(existingProfile);
+                return;
+            }
+
             reset();
 
             var profile = new Profile
@@ -659,6 +671,84 @@
                 save();
                 e.SuppressKeyPress = true;  // Stops other controls on the form receiving event.
             }
+
+        }
+
+        private void lnkRename_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (_currentProfile == null)
+            {
+                toggleProfileButtons(false);
+                return;
+            }
+
+            var oldProfile = _currentProfile.Clone();
+            
+            var name = Prompt.ShowDialog("What is the new name?", "Rename Profile", $"{oldProfile.Name}");
+
+            if (name == oldProfile.Name)
+            {
+                updateStatusMessage("Ummm...hello...the name you gave was the same!", false);
+                return;
+            }
+
+            bool handledDirty = handleContextChange();
+            if (!handledDirty)
+                return;
+
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                return;
+            }
+
+            _profileService.Delete(oldProfile);
+
+            var renamedProfile = oldProfile.Clone();
+
+            renamedProfile.Name = name;
+            
+            _profileService.Save(renamedProfile);
+            loadProfiles();
+            var index = cboProfile.Items.IndexOf(renamedProfile);
+
+            cboProfile.SelectedIndex = index;
+            toggleProfileButtons(true);
+            updateStatusMessage($"Renamed profile '{oldProfile.Name}' to '{name}'");
+        }
+
+        private void lnkClone_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            if (_currentProfile == null)
+            {
+                toggleProfileButtons(false);
+                return;
+            }
+
+            var clonedProfile = _currentProfile.Clone();
+            var originalName = clonedProfile.Name;
+
+            var newName = Prompt.ShowDialog("What is the name of this clone?", "Clone Profile", $"{originalName}");
+
+            if (String.IsNullOrEmpty(newName))
+                return;
+
+            var currentProfiles = _profileService.GetProfiles();
+            var uniqueName = newName;
+
+            if (currentProfiles.Any(x => x.Name.Equals(uniqueName, StringComparison.CurrentCultureIgnoreCase)))
+            {
+                uniqueName = $"{uniqueName} {DateTime.Now.Ticks}";
+            }
+
+            clonedProfile.Name = uniqueName;
+            _profileService.Save(clonedProfile);
+
+            loadProfiles();
+            var index = cboProfile.Items.IndexOf(clonedProfile);
+
+            cboProfile.SelectedIndex = index;
+            toggleProfileButtons(true);
+            updateStatusMessage($"Cloned profile '{originalName}' to '{uniqueName}'");
 
         }
     }

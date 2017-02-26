@@ -17,5 +17,11 @@ namespace AzureTokenMaker.App.Model {
             get; set; }
 
         public string Tenant { get; set; }
+
+        public TokenParameters Clone()
+        {
+            return new TokenParameters {ClientId = ClientId, ClientKey = ClientKey, Username = Username,
+                ResourceId = ResourceId, Password = Password, Tenant = Tenant};
+        }
     }
 }
