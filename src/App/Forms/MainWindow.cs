@@ -238,7 +238,7 @@
 
         private void updateStatusMessage(string message, bool includeTimestamp = true)
         {
-            var timestamp = includeTimestamp ? $" at {DateTime.Now:h:m:ss tt}" : String.Empty;
+            var timestamp = includeTimestamp ? $" at {DateTime.Now:h:mm:ss tt}" : String.Empty;
             tstat.Text = $"{message}{timestamp}";
         }
 
